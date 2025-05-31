@@ -56,7 +56,40 @@
     Discover the charm of viscose georgette in this <a href="https://www.fibre2fashion.com/industry-article/7843/the-versatility-of-viscose-fabric" target="_blank" rel="noopener">Fibre2Fashion article</a> – highlighting its breathability, versatility, and usage in ethnic fashion.
   </p>
 
-  <h2 style="text-align:center;margin-top:2rem;">🛍️ Ready to Create Magic?</h2>
+  <!-- Buy Now WhatsApp Button -->
+  <div style="text-align:center; margin-top:2rem;">
+    <a
+      id="whatsappButton"
+      href="#"
+      target="_blank"
+      style="
+        background-color:#25D366;
+        color:white;
+        padding:15px 30px;
+        font-size:18px;
+        font-weight:bold;
+        border-radius:30px;
+        text-decoration:none;
+        display:inline-block;
+        box-shadow:0 4px 8px rgba(0,0,0,0.2);
+        transition: background-color 0.3s ease;
+      "
+      onmouseover="this.style.backgroundColor='#1DA851'"
+      onmouseout="this.style.backgroundColor='#25D366'"
+    >
+      Buy Now via WhatsApp
+    </a>
+  </div>
+
+  <script>
+    const whatsappNumber = '91917405235350';
+    const pageUrl = encodeURIComponent(window.location.href);
+    const message = encodeURIComponent(`Hi I am interested in this fabric: ${pageUrl}`);
+    const whatsappLink = `https://wa.me/${whatsappNumber}?text=${message}`;
+    document.getElementById('whatsappButton').href = whatsappLink;
+  </script>
+
+  <h2 style="text-align:center;margin-top:3rem;">🛍️ Ready to Create Magic?</h2>
   <p style="text-align:center;font-size:1.2rem;">
     Make this premium embroidered fabric a part of your next masterpiece. <br />
     <strong><a href="https://www.bollywoodfabricstore.com" target="_blank">Shop Now at BollywoodFabricStore.com</a></strong>
