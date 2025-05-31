@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Amrut Dresses Bill</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    label, input, button {
+      display: block;
+      margin: 10px 0;
+    }
+    input[type="number"] {
+      width: 100px;
+    }
+    #output {
+      margin-top: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+<h1>Amrut Dresses - Customer Bill</h1>
+
+<label>Customer Name: <input type="text" id="customerName"></label>
+<label>Contact Number: <input type="text" id="contactNumber"></label>
+<label>Product Description: <input type="text" id="productDescription"></label>
+<label>Quantity: <input type="number" id="quantity" value="1"></label>
+<label>Rate per Item: ₹<input type="number" id="rate" value="0"></label>
+<label>Shipping Charges: ₹<input type="number" id="shipping" value="0" onchange="updateTotals()"></label>
+<label>Discount (on final total): ₹<input type="number" id="discount" value="0" onchange="updateTotals()"></label>
+
+<button onclick="calculateTotal()">Calculate Total</button>
+
+<div id="output">
+  <div id="totalAmount">Subtotal: ₹0</div>
+  <div id="gstAmount">GST (5%): ₹0</div>
+  <div id="shippingAmount">Shipping Charges: ₹0</div>
+  <div id="discountAmount">Discount: ₹0</div>
+  <div id="finalAmount">Total with GST, Shipping & Discount: ₹0</div>
+</div>
+
+<button onclick="generatePDF()">Generate PDF Bill</button>
+
+<script>
+  let subtotal = 0;
+
+  function calculateTotal() {
+    const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+    const rate = parseFloat(document.getElementById('rate').value) || 0;
+    subtotal = quantity * rate;
+    updateTotals();
+  }
+
+  function updateTotals() {
+    const gst = subtotal * 0.05;
+    const shipping = parseFloat(document.getElementById('shipping').value) || 0;
+    const discount = parseFloat(document.getElementById('discount').value) || 0;
+    let total = subtotal + gst + shipping - discount;
+    if (total < 0) total = 0;
+
+    document.getElementById('totalAmount').innerText = `Subtotal: ₹${subtotal.toFixed(2)}`;
+    document.getElementById('gstAmount').innerText = `GST (5%): ₹${gst.toFixed(2)}`;
+    document.getElementById('shippingAmount').innerText = `Shipping Charges: ₹${shipping.toFixed(2)}`;
+    document.getElementById('discountAmount').innerText = `Discount: ₹${discount.toFixed(2)}`;
+    document.getElementById('finalAmount').innerText = `Total with GST, Shipping & Discount: ₹${total.toFixed(2)}`;
+  }
+
+  async function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const name = document.getElementById('customerName').value;
+    const contact = document.getElementById('contactNumber').value;
+    const description = document.getElementById('productDescription').value;
+    const quantity = document.getElementById('quantity').value;
+    const rate = document.getElementById('rate').value;
+    const shipping = parseFloat(document.getElementById('shipping').value) || 0;
+    const discount = parseFloat(document.getElementById('discount').value) || 0;
+    const gst = subtotal * 0.05;
+    const finalTotal = subtotal + gst + shipping - discount;
+
+    let y = 10;
+    doc.text(`Amrut Dresses - Bill`, 10, y); y += 10;
+    doc.text(`Customer Name: ${name}`, 10, y); y += 8;
+    doc.text(`Contact Number: ${contact}`, 10, y); y += 8;
+    doc.text(`Product: ${description}`, 10, y); y += 8;
+    doc.text(`Quantity: ${quantity}`, 10, y); y += 8;
+    doc.text(`Rate: ₹${rate}`, 10, y); y += 8;
+    doc.text(`Subtotal: ₹${subtotal.toFixed(2)}`, 10, y); y += 8;
+    doc.text(`GST (5%): ₹${gst.toFixed(2)}`, 10, y); y += 8;
+    doc.text(`Shipping Charges: ₹${shipping.toFixed(2)}`, 10, y); y += 8;
+    doc.text(`Discount: ₹${discount.toFixed(2)}`, 10, y); y += 8;
+    doc.text(`Final Total: ₹${finalTotal.toFixed(2)}`, 10, y); y += 10;
+
+    const upiAmount = finalTotal.toFixed(2);
+    const upiUrl = `upi://pay?pa=AMRUTDRESSES.eazypay1@icici&pn=Amrut Dresses&mc=&tid=&tr=&tn=Payment for bill&am=${upiAmount}&cu=INR`;
+
+    const qrCanvas = document.createElement('canvas');
+    const qr = new QRious({
+      element: qrCanvas,
+      value: upiUrl,
+      size: 150,
+    });
+
+    const qrDataUrl = qrCanvas.toDataURL('image/png');
+    doc.addImage(qrDataUrl, 'PNG', 10, y, 50, 50);
+
+    doc.save(`Bill_${name.replace(/\\s+/g, "_")}.pdf`);
+  }
+</script>
+
+</body>
+</html>
